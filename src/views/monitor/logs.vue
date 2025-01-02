@@ -336,11 +336,11 @@ const handleCurrentChange = (val: number) => {
           <el-col :span="16">{{ detailForm.result }}</el-col>
         </el-row>
         <el-row :gutter="20" class="item">
-          <el-col :span="8">浏览器信息</el-col>
+          <el-col :span="8">浏览器信息：</el-col>
           <el-col :span="16">{{ detailForm.browser }}</el-col>
         </el-row>
         <el-row :gutter="20" class="item">
-          <el-col :span="8">操作系统</el-col>
+          <el-col :span="8">操作系统：</el-col>
           <el-col :span="16">{{ detailForm.os }}</el-col>
         </el-row>
         <el-row :gutter="20" class="item">
