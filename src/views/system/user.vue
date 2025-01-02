@@ -5,8 +5,11 @@ import {
   changeUserStatus,
   deleteUser,
   editUser,
+  editUserRole,
+  getAllRole,
   getUserDetail,
   getUserList,
+  getUserRoleDetail,
 } from '@/api'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { nextTick, ref } from 'vue'
@@ -173,6 +176,51 @@ const handleCurrentChange = (val: number) => {
   pageParams.value.pageNum = val
   getData()
 }
+const allRoleList = ref([])
+// 查询所有角色
+const getAllRoleData = async () => {
+  const res = await getAllRole()
+  if (res.code === 200) {
+    allRoleList.value = res.data
+  }
+}
+getAllRoleData()
+const showEditUserRoleModal = ref(false)
+const editUserRoleFormRef = ref()
+const editUserRoleForm = ref({
+  id: null,
+  roles: [],
+})
+// 展示 设置角色 dialog
+const handleClickEditUserRole = async (id: number) => {
+  const res = await getUserRoleDetail({ id })
+  if (res.code === 200) {
+    showEditUserRoleModal.value = true
+    editUserRoleForm.value.id = res.data.id
+    editUserRoleForm.value.roles = res.data.roles
+      ? res.data.roles?.split(',')?.map((v: string) => Number(v))
+      : []
+  }
+}
+// 关闭设置角色 dialog
+const closeEditUserRoleDialog = (formEl: any) => {
+  showEditUserRoleModal.value = false
+  editUserRoleForm.value.id = null
+  if (!formEl) return
+  formEl.resetFields()
+}
+// 提交设置角色
+const editUserRoleSubmit = async (formEl: any) => {
+  formEl.validate(async (valid: any) => {
+    if (valid) {
+      const res = await editUserRole(editUserRoleForm.value)
+      if (res.code === 200) {
+        ElMessage.success('操作成功')
+        closeEditUserRoleDialog(formEl)
+      }
+    }
+  })
+}
 </script>
 
 <template>
@@ -223,6 +271,9 @@ const handleCurrentChange = (val: number) => {
         <el-table-column label="备注" prop="remark" />
         <el-table-column label="操作" width="240" align="center" fixed="right">
           <template #default="{ row }">
+            <el-button type="primary" size="small" @click="handleClickEditUserRole(row.id)">
+              设置角色
+            </el-button>
             <el-button type="primary" size="small" @click="handleClickAddEdit(row.id)">
               编辑
             </el-button>
@@ -280,6 +331,34 @@ const handleCurrentChange = (val: number) => {
         <div>
           <el-button @click="closeAddEditDialog(addEditFormRef)">取消</el-button>
           <el-button type="primary" @click="addEditSubmit(addEditFormRef)"> 确定 </el-button>
+        </div>
+      </template>
+    </el-dialog>
+
+    <el-dialog
+      v-model="showEditUserRoleModal"
+      title="设置角色"
+      @closed="closeEditUserRoleDialog(editUserRoleFormRef)"
+    >
+      <el-form :model="editUserRoleForm" ref="editUserRoleFormRef" label-width="100px">
+        <el-form-item label="角色" prop="roles">
+          <!-- <el-input v-model="editUserRoleForm.roles" placeholder="请选择角色" /> -->
+          <el-select v-model="editUserRoleForm.roles" multiple placeholder="请选择角色">
+            <el-option
+              v-for="item in allRoleList"
+              :key="item.id"
+              :label="item.fullname"
+              :value="item.id"
+            />
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <div>
+          <el-button @click="closeEditUserRoleDialog(editUserRoleFormRef)">取消</el-button>
+          <el-button type="primary" @click="editUserRoleSubmit(editUserRoleFormRef)">
+            确定
+          </el-button>
         </div>
       </template>
     </el-dialog>

@@ -85,6 +85,14 @@ export const deleteMenu = (data: unknown) => {
  * 角色管理
  */
 
+// 所有角色
+export const getAllRole = () => {
+  return request({
+    url: '/role/all',
+    method: 'get',
+  })
+}
+
 // 列表
 export const getRoleList = (params: any, data: any) => {
   return request({
@@ -230,6 +238,24 @@ export const deleteUser = (data: any) => {
 export const batchDeleteUser = (data: any) => {
   return request({
     url: '/user/batchDelete',
+    method: 'post',
+    data,
+  })
+}
+
+// 获取用户角色
+export const getUserRoleDetail = (params: any) => {
+  return request({
+    url: '/user/getRoles',
+    method: 'get',
+    params,
+  })
+}
+
+// 设置用户角色
+export const editUserRole = (data: any) => {
+  return request({
+    url: '/user/editRole',
     method: 'post',
     data,
   })
