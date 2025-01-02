@@ -23,6 +23,11 @@ const allColumns = [
     minWidth: 80,
   },
   {
+    label: '登录IP',
+    prop: 'ip',
+    width: 100,
+  },
+  {
     label: '操作模块',
     prop: 'module',
     width: 80,
@@ -77,6 +82,16 @@ const allColumns = [
     showOverflowTooltip: true,
   },
   {
+    label: '浏览器信息',
+    prop: 'browser',
+    minWidth: 160,
+  },
+  {
+    label: '操作系统',
+    prop: 'os',
+    minWidth: 120,
+  },
+  {
     label: '操作时间',
     prop: 'createTime',
     width: 190,
@@ -90,6 +105,7 @@ const allColumns = [
 
 const selectedColumns = ref([
   'username',
+  'ip',
   'module',
   'type',
   'method',
@@ -99,6 +115,8 @@ const selectedColumns = ref([
   'body',
   'resultType',
   'result',
+  'browser',
+  'os',
   'createTime',
   'updateTime',
 ])
@@ -135,6 +153,7 @@ const resetForm = (formEl: any) => {
 
 const showDetailModal = ref(false)
 const detailForm = ref({
+  ip: '',
   username: '',
   module: '',
   type: '',
@@ -145,6 +164,8 @@ const detailForm = ref({
   body: '',
   resultType: 0,
   result: '',
+  browser: '',
+  os: '',
   createTime: '',
   updateTime: '',
 })
@@ -161,6 +182,7 @@ const handleClickDetail = async (val: string) => {
 const closeDetailDialog = () => {
   showDetailModal.value = false
   detailForm.value = {
+    ip: '',
     username: '',
     module: '',
     type: '',
@@ -171,6 +193,8 @@ const closeDetailDialog = () => {
     body: '',
     resultType: 0,
     result: '',
+    browser: '',
+    os: '',
     createTime: '',
     updateTime: '',
   }
@@ -272,6 +296,10 @@ const handleCurrentChange = (val: number) => {
           <el-col :span="16">{{ detailForm.username }}</el-col>
         </el-row>
         <el-row :gutter="20" class="item">
+          <el-col :span="8">登录IP</el-col>
+          <el-col :span="16">{{ detailForm.ip }}</el-col>
+        </el-row>
+        <el-row :gutter="20" class="item">
           <el-col :span="8">操作模块：</el-col>
           <el-col :span="16">{{ detailForm.module }}</el-col>
         </el-row>
@@ -306,6 +334,14 @@ const handleCurrentChange = (val: number) => {
         <el-row :gutter="20" class="item">
           <el-col :span="8">操作结果：</el-col>
           <el-col :span="16">{{ detailForm.result }}</el-col>
+        </el-row>
+        <el-row :gutter="20" class="item">
+          <el-col :span="8">浏览器信息</el-col>
+          <el-col :span="16">{{ detailForm.browser }}</el-col>
+        </el-row>
+        <el-row :gutter="20" class="item">
+          <el-col :span="8">操作系统</el-col>
+          <el-col :span="16">{{ detailForm.os }}</el-col>
         </el-row>
         <el-row :gutter="20" class="item">
           <el-col :span="8">操作时间：</el-col>
