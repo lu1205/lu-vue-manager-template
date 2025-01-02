@@ -25,7 +25,7 @@ const allColumns = [
   {
     label: '登录IP',
     prop: 'ip',
-    width: 100,
+    minWidth: 130,
   },
   {
     label: '操作模块',
