@@ -187,7 +187,7 @@ const iconList: any[] = Object.keys(list)?.map((v: string) => {
         <div class="action-right">
           <el-tooltip effect="dark" content="展开/收起" placement="top-start">
             <div class="icon-btn" style="margin-left: 10px" @click="changeExpandAll">
-              <svg-icon icon-class="Switch" />
+              <svg-icon icon-class="Change" />
             </div>
           </el-tooltip>
         </div>
