@@ -51,13 +51,13 @@ onMounted(() => {
     fill: 'red',
   })
 
-  const fabricImage = new FabricImage('https://fengyuanchen.github.io/cropperjs/v2/picture.jpg')
+  // const fabricImage = new FabricImage('https://fengyuanchen.github.io/cropperjs/v2/picture.jpg')
 
   // canvas中添加元素
   canvas.add(rect)
   canvas.add(helloWorld)
   canvas.add(iText)
-  canvas.add(fabricImage)
+  // canvas.add(fabricImage)
 
   // 设置元素居中
   canvas.centerObject(helloWorld)
