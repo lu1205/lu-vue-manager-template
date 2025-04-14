@@ -9,6 +9,7 @@ import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
+import cesium from "vite-plugin-cesium"
 import path from 'node:path'
 
 // https://vite.dev/config/
@@ -28,6 +29,7 @@ export default defineConfig({
       iconDirs: [path.resolve(process.cwd(), 'src/assets/svgIcon')],
       symbolId: 'icon-[dir]-[name]',
     }),
+    cesium()
   ],
   resolve: {
     alias: {

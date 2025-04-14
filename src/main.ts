@@ -9,6 +9,10 @@ import 'element-plus/es/components/message-box/style/css'
 import 'virtual:svg-icons-register'
 import SvgIcon from '@/components/SvgIcon/index.vue'
 
+// Cesium
+import * as Cesium from 'cesium'
+Cesium.Ion.defaultAccessToken = import.meta.env.VITE_CESIUM_TOKEN
+
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 
