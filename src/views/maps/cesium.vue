@@ -49,7 +49,7 @@ const initCesium = () => {
       },
     },
   })
-  console.log(viewer)
+  // console.log(viewer)
 
   viewer._cesiumWidget.creditContainer.style.display = 'none' // 隐藏版权信息
   // 设置地球的背景颜色
@@ -87,7 +87,7 @@ const initCesium = () => {
     orientation: {
       heading: Cesium.Math.toRadians(cameraOption.heading), // 朝向（可选）
       pitch: Cesium.Math.toRadians(cameraOption.pitch), // 俯仰角（可选）
-      roll: cameraOption.roll, // 翻滚角（可选）
+      roll: Cesium.Math.toRadians(cameraOption.roll), // 翻滚角（可选）
     },
   })
 }
@@ -109,8 +109,8 @@ onMounted(() => {
   initCesium()
 })
 const cameraOption = reactive({
-  longitude: 117.170494, // 经度
-  latitude: 31.843763, // 纬度
+  longitude: 117.126684, // 经度
+  latitude: 31.854588, // 纬度
   height: 3000, // 高度
 
   heading: 0, // 航向
@@ -128,7 +128,7 @@ const change = () => {
     orientation: {
       heading: Cesium.Math.toRadians(cameraOption.heading), // 朝向（可选）
       pitch: Cesium.Math.toRadians(cameraOption.pitch), // 俯仰角（可选）
-      roll: cameraOption.roll, // 翻滚角（可选）
+      roll: Cesium.Math.toRadians(cameraOption.roll), // 翻滚角（可选）
     },
   })
 }
@@ -138,20 +138,43 @@ const change = () => {
   <div class="cesium-container" id="cesium-container" ref="containerEl">
     <div class="tool-box" ref="el" :style="style" style="position: absolute; cursor: move">
       <div class="tool-item">
+        <div class="tool-item-label">经度(WGS84)</div>
+        <el-input-number
+          style="flex: 1"
+          :step="0.01"
+          v-model="cameraOption.longitude"
+          @change="change"
+        />
+      </div>
+      <div class="tool-item">
+        <div class="tool-item-label">纬度(WGS84)</div>
+        <el-input-number
+          style="flex: 1"
+          :step="0.01"
+          v-model="cameraOption.latitude"
+          @change="change"
+        />
+      </div>
+      <div class="tool-item">
         <div class="tool-item-label">高度</div>
-        <el-input-number v-model="cameraOption.height" @change="change" />
+        <el-input-number
+          style="flex: 1"
+          :step="100"
+          v-model="cameraOption.height"
+          @change="change"
+        />
       </div>
       <div class="tool-item">
         <div class="tool-item-label">航向</div>
-        <el-input-number v-model="cameraOption.heading" @change="change" />
+        <el-input-number style="flex: 1" v-model="cameraOption.heading" @change="change" />
       </div>
       <div class="tool-item">
         <div class="tool-item-label">俯仰角</div>
-        <el-input-number v-model="cameraOption.pitch" @change="change" />
+        <el-input-number style="flex: 1" v-model="cameraOption.pitch" @change="change" />
       </div>
       <div class="tool-item">
         <div class="tool-item-label">翻滚角</div>
-        <el-input-number v-model="cameraOption.roll" @change="change" />
+        <el-input-number style="flex: 1" v-model="cameraOption.roll" @change="change" />
       </div>
     </div>
   </div>
@@ -169,6 +192,7 @@ const change = () => {
   right: 10px;
   width: 300px;
   background-color: rgba(255, 255, 255, 0.5);
+  padding: 6px;
 
   .tool-item {
     display: flex;
@@ -177,7 +201,7 @@ const change = () => {
     padding: 6px;
 
     .tool-item-label {
-      width: 60%;
+      width: 120px;
     }
   }
 }

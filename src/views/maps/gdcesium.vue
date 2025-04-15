@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import * as Cesium from 'cesium'
-import { onMounted, ref, reactive,useTemplateRef } from 'vue'
+import { onMounted, ref, reactive, useTemplateRef } from 'vue'
+import { Wgs84ToGcj02, Gcj02ToWgs84 } from '../../utils/gisTools'
+import AmapMercatorTilingScheme from '../../utils/AmapMercatorTilingScheme'
+import { useDraggable } from '@vueuse/core'
+
 let viewer: null | any = null
 
 // 控件选项
@@ -14,7 +18,7 @@ const viewerOption = reactive({
   timeline: false, // 时间轴
   sceneModePicker: false, // 3D/2D切换控件
   navigationHelpButton: false, // 帮助按钮
-  geocoder: false, // 地名查询控件
+  geocoder: true, // 地名查询控件
 })
 
 // 初始化Cesium
@@ -31,6 +35,7 @@ const initCesium = () => {
     sceneModePicker: viewerOption.sceneModePicker, // 3D/2D切换控件
     navigationHelpButton: viewerOption.navigationHelpButton, // 帮助按钮
     geocoder: viewerOption.geocoder, // 地名查询控件
+    // baseLayer: false, //
     contextOptions: {
       webgl: {
         alpha: true,
@@ -67,11 +72,20 @@ const initCesium = () => {
   // viewer.imageryLayers.add(gdLabelLayer)
 
   const gdLayout = new Cesium.UrlTemplateImageryProvider({
-    // url: 'https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}', // 影像地图(卫星地图)
-    url: 'https://webrd02.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}', // 矢量地图
-    tilingScheme: new Cesium.WebMercatorTilingScheme(),
+    url: 'https://webst0{s}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}', // 影像地图(卫星地图)
+    // url: 'https://webrd02.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}', // 矢量地图
+    // tilingScheme: new Cesium.WebMercatorTilingScheme(),
+
+    tilingScheme: new AmapMercatorTilingScheme(), // 高德地图瓦片纠偏处理
+    subdomains: ['1', '2', '3', '4'],
+    // tileWidth: 256,
+    // tileHeight: 256,
     minimumLevel: 4,
     maximumLevel: 18,
+    // customTags: {
+    //   s: (provider, x, y, level) => provider.subdomains[(x + y) % provider.subdomains.length],
+    //   reverseY: (provider, x, y, level) => (1 << level) - y - 1, // Y轴反转
+    // },
   })
   // 搭配影像地图
   // let gdLabelLayout = new Cesium.UrlTemplateImageryProvider({
@@ -97,7 +111,10 @@ const initCesium = () => {
       let longitude = Cesium.Math.toDegrees(cartographic.longitude).toFixed(6)
       let latitude = Cesium.Math.toDegrees(cartographic.latitude).toFixed(6)
       let height = cartographic.height.toFixed(2)
-      console.log('点击坐标点', longitude, latitude, height)
+      console.log('点击坐标点(WGS84)', longitude, latitude, height)
+
+      const [gcjLongitude, gcjLatitude] = Wgs84ToGcj02([longitude, latitude])
+      console.log('点击坐标点(GCJ02)', gcjLongitude, gcjLatitude, height)
       // 高度
     } else {
       console.log('没有点击到地球')
@@ -110,24 +127,30 @@ const initCesium = () => {
   // })
 
   // 立即跳转
+  const [wgs84Longitude, wgs84Latitude] = Gcj02ToWgs84([
+    cameraOption.longitude,
+    cameraOption.latitude,
+  ])
+  console.log(
+    'Gcj02ToWgs84',
+    [cameraOption.longitude, cameraOption.latitude],
+    [wgs84Longitude, wgs84Latitude],
+  )
+
   viewer.camera.setView({
-    destination: Cesium.Cartesian3.fromDegrees(
-      cameraOption.longitude,
-      cameraOption.latitude,
-      cameraOption.height,
-    ), // 经度, 纬度, 高度（可选）
+    destination: Cesium.Cartesian3.fromDegrees(wgs84Longitude, wgs84Latitude, cameraOption.height), // 经度, 纬度, 高度（可选）
     orientation: {
       heading: Cesium.Math.toRadians(cameraOption.heading), // 朝向（可选）
       pitch: Cesium.Math.toRadians(cameraOption.pitch), // 俯仰角（可选）
-      roll: cameraOption.roll, // 翻滚角（可选）
+      roll: Cesium.Math.toRadians(cameraOption.roll), // 翻滚角（可选）
     },
   })
 }
 
 // 相机选项
 const cameraOption = reactive({
-  longitude: 117.170494, // 经度
-  latitude: 31.843763, // 纬度
+  longitude: 117.132306, // 经度(gcj02)
+  latitude: 31.852739, // 纬度(gcj02)
   height: 3000, // 高度
 
   heading: 0, // 航向
@@ -137,21 +160,21 @@ const cameraOption = reactive({
 
 // 相机选项值改变处理事件
 const change = () => {
+  const [wgs84Longitude, wgs84Latitude] = Gcj02ToWgs84([
+    cameraOption.longitude,
+    cameraOption.latitude,
+  ])
+
   viewer.camera.flyTo({
-    destination: Cesium.Cartesian3.fromDegrees(
-      cameraOption.longitude,
-      cameraOption.latitude,
-      cameraOption.height,
-    ), // 经度, 纬度, 高度（可选）
+    destination: Cesium.Cartesian3.fromDegrees(wgs84Longitude, wgs84Latitude, cameraOption.height), // 经度, 纬度, 高度（可选）
     orientation: {
       heading: Cesium.Math.toRadians(cameraOption.heading), // 朝向（可选）
       pitch: Cesium.Math.toRadians(cameraOption.pitch), // 俯仰角（可选）
-      roll: cameraOption.roll, // 翻滚角（可选）
+      roll: Cesium.Math.toRadians(cameraOption.roll), // 翻滚角（可选）
     },
   })
 }
 
-import { useDraggable } from '@vueuse/core'
 const containerEl = useTemplateRef<HTMLElement>('containerEl')
 const el = useTemplateRef<HTMLElement>('el')
 const { style } = useDraggable(el, {
@@ -174,20 +197,43 @@ onMounted(() => {
   <div class="cesium-container" id="cesium-container" ref="containerEl">
     <div class="tool-box" ref="el" :style="style" style="position: absolute; cursor: move">
       <div class="tool-item">
+        <div class="tool-item-label">经度(gcj02)</div>
+        <el-input-number
+          style="flex: 1"
+          :step="0.01"
+          v-model="cameraOption.longitude"
+          @change="change"
+        />
+      </div>
+      <div class="tool-item">
+        <div class="tool-item-label">纬度(gcj02)</div>
+        <el-input-number
+          style="flex: 1"
+          :step="0.01"
+          v-model="cameraOption.latitude"
+          @change="change"
+        />
+      </div>
+      <div class="tool-item">
         <div class="tool-item-label">高度</div>
-        <el-input-number v-model="cameraOption.height" @change="change" />
+        <el-input-number
+          style="flex: 1"
+          :step="100"
+          v-model="cameraOption.height"
+          @change="change"
+        />
       </div>
       <div class="tool-item">
         <div class="tool-item-label">航向</div>
-        <el-input-number v-model="cameraOption.heading" @change="change" />
+        <el-input-number style="flex: 1" v-model="cameraOption.heading" @change="change" />
       </div>
       <div class="tool-item">
         <div class="tool-item-label">俯仰角</div>
-        <el-input-number v-model="cameraOption.pitch" @change="change" />
+        <el-input-number style="flex: 1" v-model="cameraOption.pitch" @change="change" />
       </div>
       <div class="tool-item">
         <div class="tool-item-label">翻滚角</div>
-        <el-input-number v-model="cameraOption.roll" @change="change" />
+        <el-input-number style="flex: 1" v-model="cameraOption.roll" @change="change" />
       </div>
     </div>
   </div>
@@ -206,6 +252,7 @@ onMounted(() => {
   width: 300px;
   background-color: rgba(0, 0, 0, 0.5);
   color: #fff;
+  padding: 6px;
 
   .tool-item {
     display: flex;
@@ -214,7 +261,7 @@ onMounted(() => {
     padding: 6px;
 
     .tool-item-label {
-      width: 60%;
+      width: 100px;
     }
   }
 }
