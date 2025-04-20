@@ -45,13 +45,31 @@ const viewerOption = reactive({
   timeline: false, // 时间轴
   sceneModePicker: false, // 3D/2D切换控件
   navigationHelpButton: false, // 帮助按钮
-  geocoder: true // 地名查询控件
+  geocoder: true, // 地名查询控件
+  requestRenderMode: true, // 如果为true，则仅在需要时根据场景内的更改进行渲染。启用会降低应用程序的CPU/GPU使用率
+  contextOptions: {
+    requestWebgl1: true, // 如果为true并且浏览器支持，则使用WebGL 1渲染上下文
+    allowTextureFilterAnisotropic: true, // 如果为true，则在纹理采样期间使用各向异性过滤
+    webgl: {
+      alpha: true,
+      antialias: true,
+      preserveDrawingBuffer: true
+    }
+  }
 })
 
 // 初始化Cesium
 const initCesium = async () => {
   viewer = new Cesium.Viewer('cesium-container', {
-    terrain: Cesium.Terrain.fromWorldTerrain(),
+    // terrain: Cesium.Terrain.fromWorldTerrain(),
+    // terrainProvider: Cesium.CesiumTerrainProvider.fromUrl(`https://t0.tianditu.gov.cn/ter_w/wmts?tk=${TD_TK}`,{
+    //     requestVertexNormals: true,
+    //     requestWaterMask: true,
+    //   }),
+    terrainProvider: await Cesium.createWorldTerrainAsync({
+      requestVertexNormals: true,  // 请求顶点法线用于照明
+      requestWaterMask: true      // 请求水掩模数据
+    }),
     animation: viewerOption.animation, // Animation小部件,左下角的球
     baseLayerPicker: viewerOption.baseLayerPicker, // 选择底图的控件
     fullscreenButton: viewerOption.fullscreenButton, // 全屏按钮
@@ -62,6 +80,7 @@ const initCesium = async () => {
     sceneModePicker: viewerOption.sceneModePicker, // 3D/2D切换控件
     navigationHelpButton: viewerOption.navigationHelpButton, // 帮助按钮
     geocoder: viewerOption.geocoder, // 地名查询控件
+    baseLayer: false, // 默认影像
     contextOptions: {
       webgl: {
         alpha: true,
@@ -83,6 +102,14 @@ const initCesium = async () => {
     maximumLevel: 18
   })
   viewer.imageryLayers.addImageryProvider(terMap)
+
+  // const terrainProvider = Cesium.CesiumTerrainProvider.fromUrl(`https://t0.tianditu.gov.cn/ter_w/wmts?tk=${TD_TK}`,{
+  //   requestVertexNormals: true,
+  //   requestWaterMask: true,
+  // })
+  // terrainProvider.then(res=>{
+  //   viewer.terrainProvider = res
+  // })
 
   // 地图瓦片
   // const tileMap = new Cesium.UrlTemplateImageryProvider({
@@ -183,11 +210,11 @@ const initCesium = async () => {
 // 相机选项
 const cameraOption = reactive({
   longitude: 117.174406, // 经度(gcj02)
-  latitude: 31.830039, // 纬度(gcj02)
+  latitude: 31.829039, // 纬度(gcj02)
   height: 200, // 高度
 
   heading: 10, // 航向
-  pitch: -15, // 俯仰角
+  pitch: -10, // 俯仰角
   roll: 0 // 翻滚角
 })
 
