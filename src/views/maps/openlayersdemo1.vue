@@ -48,25 +48,40 @@ const adcode = ref('')
 const searchCity = ref('')
 // 获取当前城市
 const getCityName = async () => {
-  const temp = await fetch('https://restapi.amap.com/v3/ip?key=' + gaodeKey)
-  const res = await temp.json()
-  city.value = res.city
-  adcode.value = res.adcode
+  try {
+    const temp = await fetch('https://restapi.amap.com/v3/ip?key=' + gaodeKey)
+    const res = await temp.json()
+    city.value = typeof res.city === 'string' ? res.city : '合肥市'
+    adcode.value = typeof res.adcode === 'string' ? res.adcode : '340100'
+  } catch (error) {
+    city.value = '合肥市'
+    adcode.value = '340100'
+  }
+  console.log('getCityName', city.value, adcode.value)
 }
 
 // 获取城市的经纬度
 const getCityLocation = async (cityName: string) => {
-  const locationTemp = await fetch(
-    `https://restapi.amap.com/v3/geocode/geo?key=${gaodeKey}&address=${cityName}`,
-  )
-  const locationRes = await locationTemp.json()
-  cityLocation.value = locationRes.geocodes[0].location.split(',').map(Number)
+  console.log('cityName', cityName)
+
+  try {
+    const locationTemp = await fetch(
+      `https://restapi.amap.com/v3/geocode/geo?key=${gaodeKey}&address=${cityName}`,
+    )
+    const locationRes = await locationTemp.json()
+    cityLocation.value = locationRes.geocodes[0].location.split(',').map(Number)
+  } catch (error) {
+    cityLocation.value = [117.227267, 31.820567]
+  }
+  console.log('getCityLocation', cityLocation.value)
 }
 
 // 城市边界图层
 let cityLayer = null
 // 加载城市边界
 const loadCityBoundary = async () => {
+  console.log('loadCityBoundary===adcode.value', adcode.value)
+
   if (!adcode.value) {
     return
   }
@@ -404,7 +419,7 @@ onMounted(async () => {
         const center = feature.get('center')
         // 创建弹窗内容
         const content = `
-            <div>
+            <div style="position: absolute;background-color: rgb(255, 212, 212);padding: 15px;border-radius: 10px;min-width: 280px;">
                 <h3>${name}</h3>
                 <p>adcode: ${adcode}</p>
                 <p>坐标: ${center.join(', ')}</p>
@@ -484,9 +499,7 @@ onMounted(async () => {
       </div>
     </div>
     <div id="openlayers-map"></div>
-    <div id="popup" class="ol-popup">
-      <div id="popup-content"></div>
-    </div>
+    <div id="popup"></div>
   </div>
 </template>
 
@@ -518,14 +531,6 @@ onMounted(async () => {
     // width: 100%;
     // height: 100%;
     flex: 1;
-  }
-
-  .ol-popup {
-    position: absolute;
-    background-color: rgb(255, 212, 212);
-    padding: 15px;
-    border-radius: 10px;
-    min-width: 280px;
   }
 }
 </style>
