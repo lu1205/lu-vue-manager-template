@@ -39,6 +39,7 @@
     "cesium": "^1.128.0",
     "eslint": "^9.14.0",
     "eslint-plugin-vue": "^9.30.0",
+    "lodash-es": "^4.17.21",
     "npm-run-all2": "^7.0.1",
     "prettier": "^3.3.3",
     "proj4": "^2.15.0",

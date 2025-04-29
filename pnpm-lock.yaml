@@ -78,6 +78,9 @@ importers:
       eslint-plugin-vue:
         specifier: ^9.30.0
         version: 9.32.0(eslint@9.17.0)
+      lodash-es:
+        specifier: ^4.17.21
+        version: 4.17.21
       npm-run-all2:
         specifier: ^7.0.1
         version: 7.0.2
