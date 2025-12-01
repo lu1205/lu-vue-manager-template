@@ -19,10 +19,19 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
 
+// 全局引入，使用vue-particles组件引入
+// import Particles from '@tsparticles/vue3'
+// import { loadFull } from 'tsparticles'
+
 const app = createApp(App)
 
 app.use(createPinia())
 app.use(router)
+// app.use(Particles, {
+//   init: async (engine) => {
+//     await loadFull(engine)
+//   },
+// })
 
 app.component('svg-icon', SvgIcon)
 
