@@ -13,11 +13,11 @@ import { loadFull } from "tsparticles";
 
 onMounted(async () => {
   // 使用烟花特效
-  // await loadFireworksPreset(tsParticles);
-  // tsParticles.load({ id: 'tsparticles', options: { preset: 'fireworks' } });
+  await loadFireworksPreset(tsParticles);
+  tsParticles.load({ id: 'tsparticles', options: { preset: 'fireworks' } });
 
   // 使用粒子特效
-  tsParticles.load({id: 'tsparticles' , options: particlesOptions});
+  // tsParticles.load({id: 'tsparticles' , options: particlesOptions});
 
   await loadFull(tsParticles);
 })
