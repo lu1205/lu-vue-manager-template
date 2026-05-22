@@ -23,6 +23,14 @@ const routes = [
     },
     component: () => import('@/views/login.vue'),
   },
+  {
+    path: '/autobreak',
+    name: 'AutoBreak',
+    meta: {
+      title: '自动分页',
+    },
+    component: () => import('@/views/pdf/autobreak.vue'),
+  },
   // 防止控制台显示，No match found for location with path ""
   {
     path: '/:catchAll(.*)',
