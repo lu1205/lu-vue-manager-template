@@ -6,6 +6,7 @@ const content = ref('<p>这是一个TinyMCE富文本编辑器示例！</p>')
 
 const handleChange = (value: string) => {
   console.log('内容已改变:', value)
+  content.value = value
 }
 </script>
 
@@ -20,13 +21,13 @@ const handleChange = (value: string) => {
           </el-button>
         </div>
       </template>
-      
-      <TinyMceEditor 
+
+      <TinyMceEditor
         v-model="content"
         :height="600"
         @change="handleChange"
       />
-      
+
       <div class="content-preview">
         <h4>编辑器内容：</h4>
         <div v-html="content" class="preview-box"></div>
@@ -48,20 +49,20 @@ const handleChange = (value: string) => {
 
 .content-preview {
   margin-top: 20px;
-  
+
   h4 {
     margin-bottom: 10px;
     font-size: 16px;
     font-weight: 600;
   }
-  
+
   .preview-box {
     padding: 15px;
     border: 1px solid #dcdfe6;
     border-radius: 4px;
     background-color: #f5f7fa;
     min-height: 100px;
-    
+
     :deep(img) {
       max-width: 100%;
       height: auto;
