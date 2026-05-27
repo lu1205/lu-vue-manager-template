@@ -283,3 +283,11 @@ export const getLogDetail = (params: any) => {
     params,
   })
 }
+
+// 获取vue文件
+export const getVueFile = () => {
+  return request({
+    url: '/user/getUserComponent',
+    method: 'get',
+  })
+}
