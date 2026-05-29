@@ -64,7 +64,8 @@ const options = {
 }
 
 const RemoteChild = defineAsyncComponent(async () => {
-  const res = await loadModule("https://www.lu1997.online/vue/user.vue", options)
+  const url = `${window.location.origin}/vue/user.vue`
+  const res = await loadModule(url, options)
   return res
 });
 
