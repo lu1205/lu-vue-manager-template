@@ -32,6 +32,12 @@ class Request {
         const url = response.config.url || ''
         this.abortControllerMap?.delete(url)
 
+        // 处理文件数据
+        if (['stream', 'blob'].includes(response.config.responseType)) {
+          return Promise.resolve(response)
+        }
+
+        // 处理普通数据
         if (response.data.code === 200) {
           return Promise.resolve(response.data)
         } else if (response.data.code === 403) {

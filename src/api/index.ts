@@ -291,3 +291,70 @@ export const getVueFile = () => {
     method: 'get',
   })
 }
+
+/**
+ * 座位管理
+ */
+// 列表
+export const getRoomList = (params: any, data: any) => {
+  return request({
+    url: '/room/list',
+    method: 'post',
+    params,
+    data,
+  })
+}
+
+// 新增
+export const addRoom = (data: any) => {
+  return request({
+    url: '/room/add',
+    method: 'post',
+    data,
+  })
+}
+
+// 详情
+export const getRoomDetail = (params: any) => {
+  return request({
+    url: '/room/detail',
+    method: 'get',
+    params,
+  })
+}
+
+// 修改
+export const editRoom = (data: any) => {
+  return request({
+    url: '/room/edit',
+    method: 'post',
+    data,
+  })
+}
+
+// 删除
+export const deleteRoom = (data: any) => {
+  return request({
+    url: '/room/delete',
+    method: 'post',
+    data,
+  })
+}
+
+// 批量删除
+export const batchDeleteRoom = (data: any) => {
+  return request({
+    url: '/room/batchDelete',
+    method: 'post',
+    data,
+  })
+}
+
+// 文件下载(返回文件流)
+export const downloadFileStream = () => {
+  return request({
+    url: '/other/getFileStream',
+    method: 'get',
+    responseType: 'stream',
+  })
+}
