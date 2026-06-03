@@ -350,6 +350,33 @@ export const batchDeleteRoom = (data: any) => {
   })
 }
 
+// 座位图详情
+export const getSeatMapDetail = (params: any) => {
+  return request({
+    url: '/room/getSeatMap',
+    method: 'get',
+    params,
+  })
+}
+
+// 新增座位图
+export const addSeatMap = (data: any) => {
+  return request({
+    url: '/room/addSeatMap',
+    method: 'post',
+    data,
+  })
+}
+
+// 更新座位图
+export const updateSeatMap = (data: any) => {
+  return request({
+    url: '/room/updateSeatMap',
+    method: 'post',
+    data,
+  })
+}
+
 // 文件下载(返回文件流)
 export const downloadFileStream = () => {
   return request({

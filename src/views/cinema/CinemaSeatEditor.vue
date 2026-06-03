@@ -155,7 +155,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 
 // Props
 const props = defineProps({
@@ -170,6 +170,10 @@ const props = defineProps({
   hallName: {
     type: String,
     default: '1号厅'
+  },
+  seatData: {
+    type: Object,
+    default: () => ({})
   }
 })
 
@@ -179,9 +183,9 @@ const emit = defineEmits(['update:layout', 'update:stats'])
 // 响应式数据
 const rows = ref(props.initialRows)
 const cols = ref(props.initialCols)
-const seats = ref([])
-const horizontalAisles = ref(new Set())
-const verticalAisles = ref(new Set())
+const seats = ref(props.seatData.seats || [])
+const horizontalAisles = ref(new Set(props.seatData.horizontalAisles || []))
+const verticalAisles = ref(new Set(props.seatData.verticalAisles || []))
 const selectedSeat = ref(null)
 const importFileInput = ref(null)
 const propertiesPanel = ref(null)
@@ -651,12 +655,31 @@ const handleClickOutside = (event) => {
 
 // 生命周期
 onMounted(() => {
-  initSeats()
+  // initSeats()
+  updateSeatNumbers()
   document.addEventListener('click', handleClickOutside)
 })
 
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside)
+})
+
+const getSeatMapData = () => {
+  return  {
+    hallName: props.hallName,
+    rows: rows.value,
+    cols: cols.value,
+    totalSeats: totalSeats.value,
+    availableSeats: availableSeats.value,
+    disabledSeats: disabledSeats.value,
+    horizontalAisles: Array.from(horizontalAisles.value),
+    verticalAisles: Array.from(verticalAisles.value),
+    seats: seats.value
+  }
+}
+
+defineExpose({
+  getSeatMapData,
 })
 </script>
 

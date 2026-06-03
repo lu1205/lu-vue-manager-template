@@ -6,6 +6,8 @@ import {
   editRoom,
   deleteRoom,
   batchDeleteRoom,
+  getSeatMapDetail,
+  updateSeatMap,
 } from '@/api'
 import { ElMessage } from 'element-plus'
 import { nextTick, ref } from 'vue'
@@ -151,21 +153,60 @@ const handleCurrentChange = (val: number) => {
 // 座位布局 dialog
 const showAddEditSeatModal = ref(false)
 const addEditSeatDialogTitle = ref('新增')
+const addEditSeatFormData = ref({
+  id: null,
+  name: '',
+  seats: 0,
+  seatRows: 0,
+  seatCols: 0,
+  seatMap: {},
+})
 const cinemaSeatEditorRef = ref()
+const cinemaSeatEditorKey = ref(0)
 const handleClickAddEditSeat = (val: any = null) => {
   showAddEditSeatModal.value = true
-  addEditSeatDialogTitle.value = '新增'
-  if (val) {
-    addEditSeatDialogTitle.value = '编辑'
-  }
+  addEditSeatFormData.value.id = val
+  addEditSeatDialogTitle.value = '编辑'
+  nextTick(async () => {
+    const res = await getSeatMapDetail({ id: val })
+    if (res.code === 200) {
+      addEditSeatFormData.value.name = res.data.name
+      addEditSeatFormData.value.seats = res.data.seats
+      addEditSeatFormData.value.seatRows = res.data.seatRows || null
+      addEditSeatFormData.value.seatCols = res.data.seatCols || null
+      addEditSeatFormData.value.seatMap = JSON.parse(res.data.seatMap || '{}')
+      cinemaSeatEditorKey.value++
+    }
+  })
 }
 // 提交座位布局 dialog
-const addEditSeatSubmit = () => {
-  cinemaSeatEditorRef.value.submit()
+const addEditSeatSubmit = async () => {
+  const data = cinemaSeatEditorRef.value.getSeatMapData()
+  const formData = {
+    ...addEditSeatFormData.value,
+    seats: data?.availableSeats || 0,
+    seatRows: data?.rows || null,
+    seatCols: data?.cols || null,
+    seatMap: data ? JSON.stringify(data) : null,
+  }
+  console.log(formData)
+
+  const res = await updateSeatMap(formData)
+  if (res.code === 200) {
+    ElMessage.success('操作成功')
+    closeAddEditSeatDialog()
+    getData()
+  }
 }
 // 关闭座位布局 dialog
 const closeAddEditSeatDialog = () => {
   showAddEditSeatModal.value = false
+  addEditSeatFormData.value.id = null
+  addEditSeatFormData.value.name = ''
+  addEditSeatFormData.value.seats = 0
+  addEditSeatFormData.value.seatRows = 0
+  addEditSeatFormData.value.seatCols = 0
+  addEditSeatFormData.value.seatMap = {}
 }
 </script>
 
@@ -202,6 +243,9 @@ const closeAddEditSeatDialog = () => {
       <el-table :data="tableData" style="height: 100%" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" />
         <el-table-column label="名称" prop="name" min-width="100" />
+        <el-table-column label="座位数" prop="seats" min-width="100" />
+        <el-table-column label="座位排数" prop="seatRows" min-width="100" />
+        <el-table-column label="座位列数" prop="seatCols" min-width="100" />
         <el-table-column label="备注" prop="remark" min-width="100" />
         <el-table-column label="操作" width="240" align="center" fixed="right">
           <template #default="{ row }">
@@ -254,11 +298,21 @@ const closeAddEditSeatDialog = () => {
 
     <el-dialog
       width="80vw"
+      height="80vh"
+      top="5vh"
       v-model="showAddEditSeatModal"
       :title="addEditSeatDialogTitle"
       @closed="closeAddEditSeatDialog"
     >
-      <CinemaSeatEditor ref="cinemaSeatEditorRef" />
+      <CinemaSeatEditor
+        v-if="showAddEditSeatModal"
+        :key="cinemaSeatEditorKey"
+        ref="cinemaSeatEditorRef"
+        :initialRows="addEditSeatFormData.seatRows"
+        :initialCols="addEditSeatFormData.seatCols"
+        :hallName="addEditSeatFormData.name"
+        :seatData="addEditSeatFormData.seatMap"
+      />
 
       <template #footer>
         <div>
