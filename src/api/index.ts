@@ -377,6 +377,15 @@ export const updateSeatMap = (data: any) => {
   })
 }
 
+// 获取已选座位
+export const getSelectedSeats = (params: any) => {
+  return request({
+    url: '/room/getSelectedSeats',
+    method: 'get',
+    params,
+  })
+}
+
 // 文件下载(返回文件流)
 export const downloadFileStream = () => {
   return request({

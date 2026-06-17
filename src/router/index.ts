@@ -43,7 +43,7 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createWebHistory('/luVueAdmin'),
+  history: createWebHistory(import.meta.env.VITE_BASE_URL),
   routes,
   // 刷新时，滚动条位置还原
   scrollBehavior: () => ({ left: 0, top: 0 }),
