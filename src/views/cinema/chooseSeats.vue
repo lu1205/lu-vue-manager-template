@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { getSeatMapDetail, getRoomList, getSelectedSeats } from '@/api'
+import { getSeatMapDetail, getRoomList, getSelectedSeats, saveSelectedSeats } from '@/api'
 import dayjs from 'dayjs'
 import { ElMessage } from 'element-plus'
 
@@ -271,8 +271,19 @@ const drawSeatMap = () => {
 // 保存
 const handleSubmit = async () => {
   if (selectedSeats.value.length === 0) {
-    ElMessage.error('请选择座位')
-    return
+    return ElMessage.error('请选择座位')
+  }
+
+  const data = {
+    roomId: queryParams.value.roomId,
+    date: queryParams.value.date,
+    seats: selectedSeats.value.map((item: any) => item.id),
+  }
+  const res = await saveSelectedSeats(data)
+  if (res.code === 200) {
+    ElMessage.success('保存成功')
+  } else {
+    ElMessage.error(res.msg || '保存失败')
   }
 }
 </script>

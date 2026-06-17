@@ -386,6 +386,15 @@ export const getSelectedSeats = (params: any) => {
   })
 }
 
+// 保存已选座位
+export const saveSelectedSeats = (data: any) => {
+  return request({
+    url: '/room/saveSelectedSeats',
+    method: 'post',
+    data,
+  })
+}
+
 // 文件下载(返回文件流)
 export const downloadFileStream = () => {
   return request({
